@@ -12,13 +12,18 @@ return new class extends Migration
     public function up(): void
     {
         Schema::create('users', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->string('email')->unique();
-            $table->timestamp('email_verified_at')->nullable();
-            $table->string('password');
-            $table->rememberToken();
-            $table->timestamps();
+            $table->id(); // ID user
+            $table->string('nama'); // Nama pengguna
+            $table->string('email')->unique(); // Email pengguna
+            $table->timestamp('email_verified_at')->nullable(); // Waktu verifikasi email
+            $table->string('password'); // Password
+            $table->string('NIM_NIP')->unique(); // Nomor Induk Mahasiswa / Nomor Induk Pegawai
+            $table->string('alamat'); // Alamat pengguna
+            $table->string('telepon', 15); // Nomor telepon
+            $table->string('status'); // Status pengguna (aktif, non-aktif, dll.)
+            $table->foreignId('wali_id')->nullable()->constrained('users')->onDelete('set null'); // Relasi ke wali
+            $table->rememberToken(); // Token untuk 'remember me'
+            $table->timestamps(); // Timestamps untuk created_at dan updated_at
         });
 
         Schema::create('password_reset_tokens', function (Blueprint $table) {

@@ -2,8 +2,8 @@
 
 namespace App\Models;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
+use Illuminate\Database\Eloquent\Model;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 
@@ -11,37 +11,45 @@ class User extends Authenticatable
 {
     use HasFactory, Notifiable;
 
-    /**
-     * The attributes that are mass assignable.
-     *
-     * @var array<int, string>
-     */
+    // Kolom yang dapat diisi massal
     protected $fillable = [
-        'name',
+        'nama',
         'email',
         'password',
+        'NIM_NIP',
+        'alamat',
+        'telepon',
+        'status',
+        'wali_id', // Menyimpan ID wali jika ada
     ];
 
-    /**
-     * The attributes that should be hidden for serialization.
-     *
-     * @var array<int, string>
-     */
+    // Kolom yang harus disembunyikan untuk array
     protected $hidden = [
         'password',
         'remember_token',
     ];
 
-    /**
-     * Get the attributes that should be cast.
-     *
-     * @return array<string, string>
-     */
-    protected function casts(): array
+    // Relasi dengan model User untuk wali
+    public function wali()
     {
-        return [
-            'email_verified_at' => 'datetime',
-            'password' => 'hashed',
-        ];
+        return $this->belongsTo(User::class, 'wali_id');
     }
+
+    // Relasi jika pengguna adalah wali dari banyak mahasiswa
+    public function mahasiswa()
+    {
+        return $this->hasMany(User::class, 'wali_id');
+    }
+
+    // Jika menggunakan mutator untuk hashing password
+    public function setPasswordAttribute($password)
+    {
+        $this->attributes['password'] = bcrypt($password);
+    }
+
+    public function roles()
+    {
+    return $this->belongsToMany(Role::class, 'user_roles', 'user_id', 'role_id');
+    }
+
 }
